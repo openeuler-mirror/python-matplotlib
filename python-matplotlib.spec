@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 Name:           python-matplotlib
 Version:        2.2.4
-Release:        3
+Release:        4
 Summary:        A comprehensive library for creating static, animated, and interactive visualizations
 License:        Python and MIT and OFL-1.1 and BSD-3-Clause
 URL:            https://github.com/matplotlib/matplotlib
@@ -10,6 +10,8 @@ Source0:        https://github.com/matplotlib/matplotlib/archive/v%{version}/mat
 Source1:        setup.cfg
 Source1000:     https://github.com/QuLogic/mpl-images/archive/v2.2.3-with-freetype-2.8/matplotlib-2.2.3-with-freetype-2.9.1.tar.gz
 Patch0001:      0001-Use-packaged-jquery-and-jquery-ui.patch
+Patch0002:      0001-matplotlibrc-path-search-fix.patch
+Patch0003:      0001-Force-using-system-qhull.patch
 BuildRequires:  freetype-devel libpng-devel qhull-devel texlive-cm xorg-x11-server-Xvfb zlib-devel
 
 
@@ -99,6 +101,8 @@ Test data for python3-matplotlib.
 %prep
 %autosetup -n matplotlib-%{version} -p1 -N
 %patch0001 -p1
+%patch0002 -p1
+%patch0003 -p1
 gzip -dc %SOURCE1000 | tar xvf - --transform='s~^mpl-images-2.2.3-with-freetype-2.9.1/\([^/]\+\)/~lib/\1/tests/baseline_images/~'
 rm -r extern/libqhull
 sed 's/\(backend = \).*/\1TkAgg/' >setup.cfg <%{SOURCE1}
@@ -159,6 +163,9 @@ chmod +x %{buildroot}%{python3_sitearch}/matplotlib/dates.py
 %{python3_sitearch}/matplotlib/backends/{tkagg.*,__pycache__/tkagg.*,_tkagg.*}
 
 %changelog
+* Wed Mar 10 2021 caodongxia <caodongxia@huawei.com> - 2.2.4-4
+- Fix the function-import matplotlib and import matplotlib.pyplot
+
 * Fri Feb 19 2021 liyanan <liyanan32@huawei.com> - 2.2.4-3
 - remove python2 dependency
 
