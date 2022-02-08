@@ -1,18 +1,18 @@
 %global debug_package %{nil}
 Name:           python-matplotlib
-Version:        2.2.4
-Release:        4
+Version:        3.4.3
+Release:        1
 Summary:        A comprehensive library for creating static, animated, and interactive visualizations
-License:        Python and MIT and OFL-1.1 and BSD-3-Clause
+License:        Python and MIT and OFL-1.1 and Public Domain
 URL:            https://github.com/matplotlib/matplotlib
 Source0:        https://github.com/matplotlib/matplotlib/archive/v%{version}/matplotlib-%{version}.tar.gz
 # The config file for python-matplotlib
 Source1:        setup.cfg
-Source1000:     https://github.com/QuLogic/mpl-images/archive/v2.2.3-with-freetype-2.8/matplotlib-2.2.3-with-freetype-2.9.1.tar.gz
-Patch0001:      0001-Use-packaged-jquery-and-jquery-ui.patch
-Patch0002:      0001-matplotlibrc-path-search-fix.patch
-Patch0003:      0001-Force-using-system-qhull.patch
+Source1000:     https://github.com/QuLogic/mpl-images/archive/v3.4.3-with-freetype-2.10.4/matplotlib-3.4.3-with-freetype-2.10.4.tar.gz
+Patch0001:      0001-matplotlibrc-path-search-fix.patch
+Patch0002:      0002-Set-FreeType-version-to-2.10.4-and-update-tolerances.patch
 BuildRequires:  freetype-devel libpng-devel qhull-devel texlive-cm xorg-x11-server-Xvfb zlib-devel
+BuildRequires:  python3-certifi
 
 
 %description
@@ -99,29 +99,29 @@ Requires:       python3-matplotlib = %{version}-%{release}
 Test data for python3-matplotlib.
 
 %prep
-%autosetup -n matplotlib-%{version} -p1 -N
+%autosetup -n matplotlib-%{version} -N
 %patch0001 -p1
 %patch0002 -p1
-%patch0003 -p1
-gzip -dc %SOURCE1000 | tar xvf - --transform='s~^mpl-images-2.2.3-with-freetype-2.9.1/\([^/]\+\)/~lib/\1/tests/baseline_images/~'
-rm -r extern/libqhull
-sed 's/\(backend = \).*/\1TkAgg/' >setup.cfg <%{SOURCE1}
+gzip -dc %SOURCE1000 | tar xvf - --transform='s~^mpl-images-3.4.3-with-freetype-2.10.4/\([^/]\+\)/~lib/\1/tests/baseline_images/~'
+
+# Copy setup.cfg to the builddir
+cp -p %{SOURCE1} setup.cfg
 
 %build
 export http_proxy=http://127.0.0.1/
 find examples -name '*.py' -exec chmod a-x '{}' \;
-MPLCONFIGDIR=$PWD MATPLOTLIBDATA=$PWD/lib/matplotlib/mpl-data xvfb-run %{__python3} setup.py build
+
+PLCONFIGDIR=$PWD %py3_build
 
 %install
 export http_proxy=http://127.0.0.1/
+
+MPLCONFIGDIR=$PWD %py3_install
+
 mkdir -p %{buildroot}%{_sysconfdir} %{buildroot}%{_datadir}/matplotlib
-MPLCONFIGDIR=$PWD MATPLOTLIBDATA=$PWD/lib/matplotlib/mpl-data/ %{__python3} setup.py install -O1 --skip-build --root=%{buildroot}
-mv %{buildroot}%{python3_sitearch}/matplotlib/mpl-data/matplotlibrc %{buildroot}%{_sysconfdir}
 mv %{buildroot}%{python3_sitearch}/matplotlib/mpl-data %{buildroot}%{_datadir}/matplotlib
-chmod +x %{buildroot}%{python3_sitearch}/matplotlib/dates.py
 
 %files -n python-matplotlib-data
-%{_sysconfdir}/matplotlibrc
 %{_datadir}/matplotlib/mpl-data/
 %exclude %{_datadir}/matplotlib/mpl-data/fonts/
 
@@ -163,6 +163,9 @@ chmod +x %{buildroot}%{python3_sitearch}/matplotlib/dates.py
 %{python3_sitearch}/matplotlib/backends/{tkagg.*,__pycache__/tkagg.*,_tkagg.*}
 
 %changelog
+* Fri Jan 28 2022 SimpleUpdate Robot <tc@openeuler.org> - 3.4.3-1
+- Upgrade to version 3.4.3
+
 * Wed Mar 10 2021 caodongxia <caodongxia@huawei.com> - 2.2.4-4
 - Fix the function-import matplotlib and import matplotlib.pyplot
 
