@@ -1,7 +1,6 @@
-%global debug_package %{nil}
 Name:           python-matplotlib
 Version:        3.4.3
-Release:        1
+Release:        2
 Summary:        A comprehensive library for creating static, animated, and interactive visualizations
 License:        Python and MIT and OFL-1.1 and Public Domain
 URL:            https://github.com/matplotlib/matplotlib
@@ -163,6 +162,9 @@ mv %{buildroot}%{python3_sitearch}/matplotlib/mpl-data %{buildroot}%{_datadir}/m
 %{python3_sitearch}/matplotlib/backends/{tkagg.*,__pycache__/tkagg.*,_tkagg.*}
 
 %changelog
+* Sat Mar 05 2022 chenchen <chen_aka_jan@163.com> - 3.4.3-2
+- enable debuginfo
+
 * Fri Jan 28 2022 SimpleUpdate Robot <tc@openeuler.org> - 3.4.3-1
 - Upgrade to version 3.4.3
 
