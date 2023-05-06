@@ -1,6 +1,6 @@
 Name:           python-matplotlib
 Version:        3.4.3
-Release:        2
+Release:        3
 Summary:        A comprehensive library for creating static, animated, and interactive visualizations
 License:        Python and MIT and OFL-1.1 and Public Domain
 URL:            https://github.com/matplotlib/matplotlib
@@ -10,6 +10,7 @@ Source1:        setup.cfg
 Source1000:     https://github.com/QuLogic/mpl-images/archive/v3.4.3-with-freetype-2.10.4/matplotlib-3.4.3-with-freetype-2.10.4.tar.gz
 Patch0001:      0001-matplotlibrc-path-search-fix.patch
 Patch0002:      0002-Set-FreeType-version-to-2.10.4-and-update-tolerances.patch
+Patch0003:      0003-fix-clang.patch
 BuildRequires:  freetype-devel libpng-devel qhull-devel texlive-cm xorg-x11-server-Xvfb zlib-devel
 BuildRequires:  python3-certifi
 
@@ -101,6 +102,7 @@ Test data for python3-matplotlib.
 %autosetup -n matplotlib-%{version} -N
 %patch0001 -p1
 %patch0002 -p1
+%patch0003 -p1
 gzip -dc %SOURCE1000 | tar xvf - --transform='s~^mpl-images-3.4.3-with-freetype-2.10.4/\([^/]\+\)/~lib/\1/tests/baseline_images/~'
 
 # Copy setup.cfg to the builddir
@@ -162,6 +164,9 @@ mv %{buildroot}%{python3_sitearch}/matplotlib/mpl-data %{buildroot}%{_datadir}/m
 %{python3_sitearch}/matplotlib/backends/{tkagg.*,__pycache__/tkagg.*,_tkagg.*}
 
 %changelog
+* Sat May 06 2023 yoo <sunyuechi@iscas.ac.cn> - 3.4.3-3
+- fix clang build error
+
 * Sat Mar 05 2022 chenchen <chen_aka_jan@163.com> - 3.4.3-2
 - enable debuginfo
 
